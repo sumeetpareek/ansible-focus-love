@@ -1,0 +1,5 @@
+---
+# tasks file for manage-distracting-sites
+
+- name: testing the local play
+  shell: echo "falana dhimaka"

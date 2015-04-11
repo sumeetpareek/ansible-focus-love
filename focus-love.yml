@@ -1,0 +1,10 @@
+---
+
+# Playbook to manage distracting sites, allowing focus on work that you love
+
+- hosts: 127.0.0.1
+  connection: local
+  sudo: yes
+  gather_facts: false
+  roles: 
+    - manage-distracting-sites
