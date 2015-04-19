@@ -1,6 +1,21 @@
 ---
 # tasks file for manage-distracting-sites
 
-- name: testing the local play
-  shell: echo " site == {{ item }} =="
-  with_items: distracting_sites
+# NOTE: We ignore this task and use symlinked vars/config file for simplicity
+# We can stat and create file, or use touch
+# For our use case touch works
+# Refer - http://stackoverflow.com/questions/28347717/how-to-create-an-empty-file-with-ansible
+# - name: Ensure file with distracting sites list exists
+#   file:
+#     path="~/.distracting_sites_ansible_focus_love.yml"
+#     state=touch
+
+- name: Add new distracting site to exisitng list
+  lineinfile:
+    dest={{ playbook_dir }}/group_vars/all/config.yml
+    state=present
+    follow=yes
+    regexp="{{ user_input_distracting_site }}"
+    line="  - {{ user_input_distracting_site }}"
+    insertafter=EOF
+  when: user_input_distracting_site is defined
