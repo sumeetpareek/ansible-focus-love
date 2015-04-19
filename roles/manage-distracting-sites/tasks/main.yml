@@ -10,7 +10,16 @@
 #     path="~/.distracting_sites_ansible_focus_love.yml"
 #     state=touch
 
-- name: Add new distracting site to exisitng list
+- name: Block supplied site
+  lineinfile:
+    dest=/etc/hosts
+    state=present
+    regexp="{{ user_input_distracting_site }}"
+    line="127.0.0.1        {{ user_input_distracting_site }} www.{{ user_input_distracting_site }}"
+    insertafter=EOF
+  when: user_action == "block" and user_input_distracting_site is defined
+
+- name: Adds supplied site to distracting sites list
   lineinfile:
     dest={{ playbook_dir }}/group_vars/all/config.yml
     state=present
@@ -18,4 +27,17 @@
     regexp="{{ user_input_distracting_site }}"
     line="  - {{ user_input_distracting_site }}"
     insertafter=EOF
-  when: user_input_distracting_site is defined
+  when: user_action == "block" and user_input_distracting_site is defined
+
+- name: Block each distracting site
+  lineinfile:
+    dest=/etc/hosts
+    state=present
+    regexp="{{ item }}"
+    line="127.0.0.1        {{ item }} www.{{ item }}"
+    insertafter=EOF
+  when: user_action == "block" and user_input_distracting_site is not defined
+  with_items: distracting_sites
+
+- name: Clear the DNS cache
+  shell: "dscacheutil -flushcache"
